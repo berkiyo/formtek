@@ -1,4 +1,5 @@
 <?php
+
 /*
 Plugin Name: Formtek
 Plugin URI: N/A
@@ -31,18 +32,47 @@ if (! function_exists('add_action')) {
 
 
 // let's get into the OOP side of things
-class FormtekPlugin {
+class Formtek {
 
+
+    function __construct() {
+        add_action('init', array($this, 'custom_post_type'));
+    }
+
+    /** ACTIVATE
+     * Use these methods to update or clear a database
+     * -> generate a custom post type
+     * -> flush rewrite rules
+     */
     function activate() {
-        echo 'The plugin is now activated';
+        // generate a CPT
+        $this->custom_post_type();
+        // flush rewrite rules
+        flush_rewrite_rules();
     }
 
+    /** DEACTIVATE
+     * Use these methods to update or clear a database
+     * -> flush rewrite rules
+     */
     function deactivate() {
-        echo 'The plugin is now deactivate';
+        flush_rewrite_rules();
     }
-
+    
+    /** Uninstall
+     * Use these methods to update or clear a database
+     * -> delete CPT
+     * -> delete all plugin data from DB
+     */
     function uninstall() {
 
+    }
+
+    /** CUSTOM_POST_TYPE
+     * Triggered by the __construct()
+     */
+    function custom_post_type() {
+        register_post_type('book', ['public' => 'true', 'label' => 'Formtek']);
     }
 
 }
@@ -56,7 +86,11 @@ if (class_exists('FormtekPlugin')) {
 register_activation_hook(__FILE__, array($formtekPlugin, 'activate')); // we pass an array, use our object and call the activate function (__FILE__ is global)
 
 // deactivation
+register_deactivation_hook(__FILE__, array($formtekPlugin, 'deactivate')); // we pass an array, use our object and call the activate function (__FILE__ is global)
 
 // uninstall
+register_uninstall_hook(__FILE__, array($formtekPlugin, 'uninstall')); // remove all database releated data
+
+
 
 ?>
